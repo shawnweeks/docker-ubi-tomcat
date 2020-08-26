@@ -15,5 +15,5 @@ shutdown() {
 }
 
 trap "shutdown" INT
-python3 entrypoint.py
+entrypoint.py
 startup

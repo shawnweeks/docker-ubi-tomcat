@@ -70,9 +70,9 @@
                connectionTimeout="20000"
                redirectPort="8443"{% if TOMCAT_PROXY_NAME is defined %} 
                proxyName="{{ TOMCAT_PROXY_NAME }}"
-               proxyPort="{{ TOMCAT_PROXY_PORT | default('80') }}"
-               scheme="{{ TOMCAT_SCHEME | default('http') }}"
-               secure="{{ TOMCAT_SECURE | default('false') }}"{% endif %} />
+               proxyPort="{{ TOMCAT_PROXY_PORT | default('443') }}"
+               scheme="{{ TOMCAT_SCHEME | default('https') }}"
+               secure="{{ TOMCAT_SECURE | default('true') }}"{% endif %} />
     <!-- A "Connector" using the shared thread pool-->
     <!--
     <Connector executor="tomcatThreadPool"
