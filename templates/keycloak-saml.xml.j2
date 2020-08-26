@@ -1,0 +1,40 @@
+<keycloak-saml-adapter xmlns="urn:keycloak:saml:adapter"
+                       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                       xsi:schemaLocation="urn:keycloak:saml:adapter http://www.keycloak.org/schema/keycloak_saml_adapter_1_7.xsd">
+    <SP entityID="{{ TOMCAT_SAML_SP_ENTITY_ID }}"
+        sslPolicy="EXTERNAL"
+        logoutPage="/logout.jsp"
+        nameIDPolicyFormat="urn:oasis:names:tc:SAML:1.1:nameid-format:unspecified"
+        forceAuthentication="true">
+        <Keys>
+            <Key signing="{{ TOMCAT_SAML_SP_SIGN | default('false') }}">
+                {% if TOMCAT_SAML_SP_KEY is defined %}<PrivateKeyPem>{{ TOMCAT_SAML_SP_KEY }}</PrivateKeyPem>{% endif %}
+                {% if TOMCAT_SAML_SP_CERT is defined %}<CertificatePem>{{ TOMCAT_SAML_SP_CERT }}</CertificatePem>{% endif %}
+            </Key>
+        </Keys>
+        <PrincipalNameMapping policy="FROM_NAME_ID"/>
+        <RoleIdentifiers>
+            <Attribute name="Role"/>
+        </RoleIdentifiers>
+        <IDP entityID="{{ TOMCAT_SAML_IDP_ENTITY_ID }}">
+            <SingleSignOnService signRequest="false"
+                                 validateResponseSignature="false"
+                                 requestBinding="REDIRECT"
+                                 responseBinding="REDIRECT"
+                                 bindingUrl="{{ TOMCAT_SAML_IDP_BINDING_URL }}" />
+
+            <SingleLogoutService validateRequestSignature="false"
+                                 validateResponseSignature="false"
+                                 signRequest="false"
+                                 signResponse="false"
+                                 requestBinding="REDIRECT"
+                                 responseBinding="REDIRECT"
+                                 redirectBindingUrl="{{ TOMCAT_SAML_IDP_LOGOUT_BINDING_URL }}" />
+            <Keys>
+                <Key signing="{{ TOMCAT_SAML_IDP_SIGN | default('false') }}">
+                    {% if TOMCAT_SAML_IDP_CERT is defined %}<CertificatePem>{{ TOMCAT_SAML_IDP_CERT }}</CertificatePem>{% endif %}
+                </Key>
+            </Keys>
+        </IDP>
+    </SP>
+</keycloak-saml-adapter>
