@@ -1,6 +1,6 @@
 # Example Build
 ```shell
-docker build -t registry.cloudbrocktec.com/apache/tomcat:9.0 .
+docker build -t registry.cloudbrocktec.com/apache/docker-tomcat:9.0 .
 ```
 
 # Build Paramters
@@ -24,14 +24,14 @@ docker build -t registry.cloudbrocktec.com/apache/tomcat:9.0 .
 |TOMCAT_SECURE|URL Secure|true|
 |TOMCAT_SAML_ENABLED|Enables Keycloak SAML Adapter for Tomcat|false|
 |TOMCAT_SAML_SP_ENTITY_ID|The identifier for this client||
-|TOMCAT_SAML_SP_SIGN_KEY|Should SP Sign Requests. Requires Private Key|false|
+|TOMCAT_SAML_SP_SIGN_KEY|Should this key be used to sign requests|true|
+|TOMCAT_SAML_SP_ENCR_KEY|Should this key be used to encrypt requests|false|
 |TOMCAT_SAML_SP_KEY|SP private key in PEM format||
 |TOMCAT_SAML_SP_CERT|SP certificate in PEM format||
-|TOMCAT_SAML_IDP_SIGN_REQ|Does the IDP Sign Requests|true|
+|TOMCAT_SAML_IDP_SIGN_REQ|Does the IDP Require Signatures|true|
 |TOMCAT_SAML_IDP_ENTITY_ID|This is the issuer ID of the IDP. This setting is REQUIRED.||
-|TOMCAT_SAML_IDP_BINDING_URL|This is the URL for the IDP login service that the client will send requests to. This setting is REQUIRED.||
-|TOMCAT_SAML_IDP_LOGOUT_BINDING_URL|This is the URL for the IDP’s logout service when using the REDIRECT binding. This setting is REQUIRED.||
-|TOMCAT_SAML_IDP_CERT|IDP Certificate in PEM Format||
+|TOMCAT_SAML_IDP_SSO_BIND_URL|This is the URL for the IDP login service that the client will send requests to. This setting is REQUIRED.||
+|TOMCAT_SAML_IDP_SLS_BIND_URL|This is the URL for the IDP’s logout service when using the REDIRECT binding. This setting is REQUIRED.||
 <br>
 
 # Example Run Command With WAR
