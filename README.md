@@ -1,4 +1,4 @@
-# Example Build
+# Example Build 
 ```shell
 docker build -t registry.cloudbrocktec.com/apache/docker-tomcat:9.0 .
 ```
