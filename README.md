@@ -1,8 +1,12 @@
-### Example Build
+### Build Image
 ```shell
 docker build -t registry.cloudbrocktec.com/apache/docker-tomcat:9.0 .
 ```
-<br/>
+
+### Push to Registry
+```shell
+docker push registry.cloudbrocktec.com/apache/docker-tomcat
+```
 
 ### Build Paramters
 | Argument | Description | Default |
