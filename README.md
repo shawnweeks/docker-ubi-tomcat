@@ -50,7 +50,8 @@ docker push registry.cloudbrocktec.com/apache/docker-tomcat
 
 ###  Example Run Command With WAR
 ```shell
-docker run -it --rm --name tomcat-test \
+docker run --init -it --rm \
+    --name tomcat \
     -v $PWD/auth-test/target/auth-test-0.0.1-SNAPSHOT.war:/opt/tomcat/webapps/auth-test.war \
     -p 8080:8080 \
     -e TOMCAT_SAML_ENABLED=true \
