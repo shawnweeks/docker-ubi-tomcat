@@ -1,11 +1,32 @@
+### Download Depencies
+```shell
+export TOMCAT_VERSION=9.0.38
+export KEYCLOAK_VERSION=11.0.1
+
+wget https://archive.apache.org/dist/tomcat/tomcat-9/v${TOMCAT_VERSION}/bin/apache-tomcat-${TOMCAT_VERSION}.tar.gz
+wget https://downloads.jboss.org/keycloak/${KEYCLOAK_VERSION}/adapters/saml/keycloak-saml-tomcat-adapter-dist-${KEYCLOAK_VERSION}.tar.gz
+```
+
 ### Build Image
 ```shell
-docker build -t registry.cloudbrocktec.com/apache/docker-tomcat:9.0 .
+docker build \
+    -t ${REGISTRY}/apache/tomcat:9.0.38 \
+    --build-arg BASE_REGISTRY=${REGISTRY} \
+    --build-arg TOMCAT_VERSION=9.0.38 \
+    .
 ```
 
 ### Push to Registry
 ```shell
-docker push registry.cloudbrocktec.com/apache/docker-tomcat
+docker push 067151586519.dkr.ecr.us-gov-west-1.amazonaws.com/apache/docker-tomcat
+```
+
+###
+```shell
+docker run --init -it --rm \
+    --name tomcat  \
+    -p 8080:8080 \
+    ${REGISTRY}/apache/tomcat:9.0.38
 ```
 
 ### Build Paramters

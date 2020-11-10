@@ -1,44 +1,54 @@
-ARG BASE_REGISTRY=registry.cloudbrocktec.com
+ARG BASE_REGISTRY=067151586519.dkr.ecr.us-gov-west-1.amazonaws.com
 ARG BASE_IMAGE=redhat/ubi/ubi8
-ARG BASE_TAG=8.2
+ARG BASE_TAG=8.3
 
+FROM ${BASE_REGISTRY}/${BASE_IMAGE}:${BASE_TAG} as build
 
-FROM ${BASE_REGISTRY}/${BASE_IMAGE}:${BASE_TAG} as stage
+ARG TOMCAT_VERSION=9.0.38
+ARG TOMCAT_PACKAGE=apache-tomcat-${TOMCAT_VERSION}.tar.gz
 
-ARG TOMCAT_MIRROR=https://mirrors.gigenet.com/apache
-ARG TOMCAT_VERSION=9.0.37
-ENV TOMCAT_DOWNLOAD_URL=${TOMCAT_MIRROR}/tomcat/tomcat-9/v${TOMCAT_VERSION}/bin/apache-tomcat-${TOMCAT_VERSION}.tar.gz
-
-ARG KEYCLOAK_MIRROR=https://downloads.jboss.org/keycloak
 ARG KEYCLOAK_VERSION=11.0.1
-ENV KEYCLOAK_DOWNLOAD_URL=${KEYCLOAK_MIRROR}/${KEYCLOAK_VERSION}/adapters/saml/keycloak-saml-tomcat-adapter-dist-${KEYCLOAK_VERSION}.tar.gz
+ARG KEYCLOAK_PACKAGE=keycloak-saml-tomcat-adapter-dist-${KEYCLOAK_VERSION}.tar.gz
 
-COPY [ "entrypoint.sh", "entrypoint.py", "entrypoint_helpers.py", "/tmp/tomcat/bin/" ]
+COPY [ "${TOMCAT_PACKAGE}", "${KEYCLOAK_PACKAGE}", "/tmp/" ]
 
-RUN dnf install -y wget && \
-    wget ${TOMCAT_DOWNLOAD_URL} -P /tmp && \
-    wget ${KEYCLOAK_DOWNLOAD_URL} -P /tmp && \
-    mkdir -p /tmp/tomcat && \
-    tar -xvf /tmp/apache-tomcat-${TOMCAT_VERSION}.tar.gz --strip-components=1 -C /tmp/tomcat && \
-    mkdir -p /tmp/keycloak && \
-    tar -xvf /tmp/keycloak-saml-tomcat-adapter-dist-${KEYCLOAK_VERSION}.tar.gz -C /tmp/keycloak && \
-    cp -n /tmp/keycloak/* /tmp/tomcat/lib && \
-    rm -rf /tmp/tomcat/webapps/* && \
-    chmod 755 /tmp/tomcat/bin/*
+RUN mkdir -p /tmp/tomcat_pkg && \
+    tar -xf /tmp/${TOMCAT_PACKAGE} -C "/tmp/tomcat_pkg" --strip-components=1 && \
+    mkdir -p /tmp/keycloak_pkg && \
+    tar -xf /tmp/${KEYCLOAK_PACKAGE} -C "/tmp/keycloak_pkg" --strip-components=1
+
+###############################################################################
+ARG BASE_REGISTRY=067151586519.dkr.ecr.us-gov-west-1.amazonaws.com
+ARG BASE_IMAGE=redhat/ubi/ubi8
+ARG BASE_TAG=8.3
 
 FROM ${BASE_REGISTRY}/${BASE_IMAGE}:${BASE_TAG}
 
-ENV CATALINA_HOME=/opt/tomcat
+ENV TOMCAT_USER tomcat
+ENV TOMCAT_GROUP tomcat
+ENV TOMCAT_UID 1001
+ENV TOMCAT_GID 1001
+
+ENV TOMCAT_HOME=/opt/tomcat
 ENV PATH=$PATH:$CATALINA_HOME/bin
 
-RUN dnf install -y python3 python3-jinja2 java-1.8.0-openjdk-devel && \
-    groupadd -r -g 1001 tomcat && \
-    useradd -r -u 1001 -g tomcat -m -d /opt/tomcat tomcat
+RUN yum install -y python3 python3-jinja2 java-1.8.0-openjdk-devel && \
+    yum clean all && \    
+    mkdir -p ${TOMCAT_HOME} && \
+    groupadd -r -g ${TOMCAT_GID} ${TOMCAT_GROUP} && \
+    useradd -r -u ${TOMCAT_UID} -g ${TOMCAT_GROUP} -M -d ${TOMCAT_HOME} ${TOMCAT_USER} && \
+    chown ${TOMCAT_USER}:${TOMCAT_GROUP} ${TOMCAT_HOME}
 
-COPY templates/*.j2 /opt/jinja-templates/
+COPY [ "templates/*.j2", "/opt/jinja-templates/" ]
+COPY --from=build --chown=${TOMCAT_USER}:${TOMCAT_GROUP} [ "/tmp/tomcat_pkg", "${TOMCAT_HOME}/" ]
+COPY --from=build --chown=${TOMCAT_USER}:${TOMCAT_GROUP} [ "/tmp/keycloak_pkg", "${TOMCAT_HOME}/lib" ]
+COPY --chown=${TOMCAT_USER}:${TOMCAT_GROUP} [ "entrypoint.sh", "entrypoint.py", "entrypoint_helpers.py", "${TOMCAT_HOME}/" ]
 
-COPY --from=stage --chown=tomcat:tomcat /tmp/tomcat /opt/tomcat
-USER tomcat
-WORKDIR /opt/tomcat
+RUN chmod 755 ${TOMCAT_HOME}/entrypoint.*
+
 EXPOSE 8080
+
+USER ${TOMCAT_USER}
+WORKDIR ${TOMCAT_HOME}
+ENV PATH=${PATH}:${TOMCAT_HOME}
 CMD ["entrypoint.sh"]
