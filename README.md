@@ -18,7 +18,7 @@ docker build \
 
 ### Push to Registry
 ```shell
-docker push 067151586519.dkr.ecr.us-gov-west-1.amazonaws.com/apache/docker-tomcat
+docker push 067151586519.dkr.ecr.us-gov-west-1.amazonaws.com/apache/tomcat
 ```
 
 ###
