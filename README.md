@@ -13,12 +13,13 @@ docker build \
     -t ${REGISTRY}/apache/tomcat:9.0.38 \
     --build-arg BASE_REGISTRY=${REGISTRY} \
     --build-arg TOMCAT_VERSION=9.0.38 \
+    --build-arg KEYCLOAK_VERSION=11.0.1 \
     .
 ```
 
 ### Push to Registry
 ```shell
-docker push 067151586519.dkr.ecr.us-gov-west-1.amazonaws.com/apache/tomcat
+docker push ${REGISTRY}/apache/tomcat
 ```
 
 ###

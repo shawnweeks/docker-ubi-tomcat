@@ -1,13 +1,13 @@
-ARG BASE_REGISTRY=067151586519.dkr.ecr.us-gov-west-1.amazonaws.com
+ARG BASE_REGISTRY
 ARG BASE_IMAGE=redhat/ubi/ubi8
 ARG BASE_TAG=8.3
 
 FROM ${BASE_REGISTRY}/${BASE_IMAGE}:${BASE_TAG} as build
 
-ARG TOMCAT_VERSION=9.0.38
+ARG TOMCAT_VERSION
 ARG TOMCAT_PACKAGE=apache-tomcat-${TOMCAT_VERSION}.tar.gz
 
-ARG KEYCLOAK_VERSION=11.0.1
+ARG KEYCLOAK_VERSION
 ARG KEYCLOAK_PACKAGE=keycloak-saml-tomcat-adapter-dist-${KEYCLOAK_VERSION}.tar.gz
 
 COPY [ "${TOMCAT_PACKAGE}", "${KEYCLOAK_PACKAGE}", "/tmp/" ]
@@ -15,13 +15,9 @@ COPY [ "${TOMCAT_PACKAGE}", "${KEYCLOAK_PACKAGE}", "/tmp/" ]
 RUN mkdir -p /tmp/tomcat_pkg && \
     tar -xf /tmp/${TOMCAT_PACKAGE} -C "/tmp/tomcat_pkg" --strip-components=1 && \
     mkdir -p /tmp/keycloak_pkg && \
-    tar -xf /tmp/${KEYCLOAK_PACKAGE} -C "/tmp/keycloak_pkg" --strip-components=1
+    tar -xf /tmp/${KEYCLOAK_PACKAGE} -C "/tmp/tomcat_pkg/lib"    
 
 ###############################################################################
-ARG BASE_REGISTRY=067151586519.dkr.ecr.us-gov-west-1.amazonaws.com
-ARG BASE_IMAGE=redhat/ubi/ubi8
-ARG BASE_TAG=8.3
-
 FROM ${BASE_REGISTRY}/${BASE_IMAGE}:${BASE_TAG}
 
 ENV TOMCAT_USER tomcat
