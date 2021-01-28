@@ -28,7 +28,7 @@ ENV TOMCAT_GID 1001
 ENV TOMCAT_HOME=/opt/tomcat
 ENV PATH=$PATH:$CATALINA_HOME/bin
 
-RUN yum install -y python3 python3-jinja2 java-1.8.0-openjdk-devel && \
+RUN yum install -y python3 python3-jinja2 java-11-openjdk-devel && \
     yum clean all && \    
     mkdir -p ${TOMCAT_HOME} && \
     groupadd -r -g ${TOMCAT_GID} ${TOMCAT_GROUP} && \
