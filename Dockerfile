@@ -8,7 +8,7 @@ ARG TOMCAT_VERSION
 ARG TOMCAT_PACKAGE=apache-tomcat-${TOMCAT_VERSION}.tar.gz
 
 ARG KEYCLOAK_VERSION
-ARG KEYCLOAK_PACKAGE=keycloak-saml-tomcat-adapter-dist-${KEYCLOAK_VERSION}.tar.gz
+ARG KEYCLOAK_PACKAGE=keycloak-saml-tomcat-adapter-${KEYCLOAK_VERSION}.tar.gz
 
 COPY [ "${TOMCAT_PACKAGE}", "${KEYCLOAK_PACKAGE}", "/tmp/" ]
 

@@ -1,19 +1,17 @@
-#!/bin/sh
+#!/bin/bash
 
 set -e
 
-startup() {
-    echo Starting Tomcat Server
-    ${TOMCAT_HOME}/bin/startup.sh
-    sleep 15
-    tail -n +1 -F ${TOMCAT_HOME}/logs/*
-}
-
 shutdown() {
     echo Stopping Tomcat Server
-    ${TOMCAT_HOME}/bin/shutdown.sh
+    kill -SIGTERM ${TOMCAT_PID}
 }
 
-trap "shutdown" INT
 entrypoint.py
-startup
+
+trap "shutdown" TERM INT
+${HOME}/bin/catalina.sh run &
+TOMCAT_PID="$!"
+
+echo "Tomcat running with PID ${TOMCAT_PID}"
+wait ${TOMCAT_PID}

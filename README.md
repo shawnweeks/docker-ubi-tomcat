@@ -1,19 +1,22 @@
 ### Download Depencies
 ```shell
-export TOMCAT_VERSION=9.0.38
-export KEYCLOAK_VERSION=11.0.1
+export TOMCAT_VERSION=9.0.41
+export KEYCLOAK_VERSION=12.0.2
 
 wget https://archive.apache.org/dist/tomcat/tomcat-9/v${TOMCAT_VERSION}/bin/apache-tomcat-${TOMCAT_VERSION}.tar.gz
-wget https://downloads.jboss.org/keycloak/${KEYCLOAK_VERSION}/adapters/saml/keycloak-saml-tomcat-adapter-dist-${KEYCLOAK_VERSION}.tar.gz
+wget https://github.com/keycloak/keycloak/releases/download/${KEYCLOAK_VERSION}/keycloak-saml-tomcat-adapter-${KEYCLOAK_VERSION}.tar.gz
 ```
 
 ### Build Image
 ```shell
+export TOMCAT_VERSION=9.0.41
+export KEYCLOAK_VERSION=12.0.2
+
 docker build \
-    -t ${REGISTRY}/apache/tomcat:9.0.38 \
+    -t ${REGISTRY}/apache/tomcat:${TOMCAT_VERSION} \
     --build-arg BASE_REGISTRY=${REGISTRY} \
-    --build-arg TOMCAT_VERSION=9.0.38 \
-    --build-arg KEYCLOAK_VERSION=11.0.1 \
+    --build-arg TOMCAT_VERSION=${TOMCAT_VERSION} \
+    --build-arg KEYCLOAK_VERSION=${KEYCLOAK_VERSION} \
     .
 ```
 
@@ -27,7 +30,7 @@ docker push ${REGISTRY}/apache/tomcat
 docker run --init -it --rm \
     --name tomcat  \
     -p 8080:8080 \
-    ${REGISTRY}/apache/tomcat:9.0.38
+    ${REGISTRY}/apache/tomcat:${TOMCAT_VERSION}
 ```
 
 ### Build Paramters
