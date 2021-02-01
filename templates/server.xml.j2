@@ -66,13 +66,22 @@
          APR (HTTP/AJP) Connector: /docs/apr.html
          Define a non-SSL/TLS HTTP/1.1 Connector on port 8080
     -->
-    <Connector port="8080" protocol="HTTP/1.1"
+    <Connector port="{{ TOMCAT_PORT | default('8080') }}"
+               protocol="HTTP/1.1"
                connectionTimeout="20000"
-               redirectPort="8443"{% if TOMCAT_PROXY_NAME is defined %} 
-               proxyName="{{ TOMCAT_PROXY_NAME }}"
-               proxyPort="{{ TOMCAT_PROXY_PORT | default('443') }}"
-               scheme="{{ TOMCAT_SCHEME | default('https') }}"
-               secure="{{ TOMCAT_SECURE | default('true') }}"{% endif %} />
+               redirectPort="8443"
+
+               SSLEnabled="{{ TOMCAT_SSL_ENABLED | default('false') }}"
+               sslEnabledProtocols="{{ TOMCAT_SSL_ENABLED_PROTOCOLS | default ('TLSv1.2,TLSv1.3') }}"
+               keyAlias="{{ TOMCAT_KEY_ALIAS | default('') }}"
+               keystoreFile="{{ TOMCAT_KEYSTORE_FILE | default('') }}"
+               keystorePass="{{ TOMCAT_KEYSTORE_PASS | default('') }}"
+               keystoreType="{{ TOMCAT_KEYSTORE_TYPE| default('JKS') }}"     
+               
+               proxyName="{{ TOMCAT_PROXY_NAME | default('') }}"
+               proxyPort="{{ TOMCAT_PROXY_PORT | default('') }}"
+               scheme="{{ TOMCAT_SCHEME | default('http') }}"
+               secure="{{ TOMCAT_SECURE | default('false') }}"/>
     <!-- A "Connector" using the shared thread pool-->
     <!--
     <Connector executor="tomcatThreadPool"

@@ -1,46 +1,46 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <keycloak-saml-adapter xmlns="urn:keycloak:saml:adapter"
                        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-                       xsi:schemaLocation="urn:keycloak:saml:adapter http://www.keycloak.org/schema/keycloak_saml_adapter_1_7.xsd">
-    <SP entityID="{{ KEYCLOAK_SAML_SP_ENTITY_ID }}"
-        logoutPage="{{ KEYCLOAK_SAML_SP_LOGOUT_PAGE | default('/logout.jsp') }}"
-        {% if KEYCLOAK_SAML_SP_SSL_POLICY is defined %}sslPolicy="{{ KEYCLOAK_SAML_SP_SSL_POLICY }}"{% endif %}    
-        {% if KEYCLOAK_SAML_SP_NAME_ID_POLICY_FORMAT is defined %}nameIDPolicyFormat="{{ KEYCLOAK_SAML_SP_NAME_ID_POLICY_FORMAT }}"{% endif %}
-        {% if KEYCLOAK_SAML_SP_FORCE_AUTH is defined %}forceAuthentication="{{ KEYCLOAK_SAML_SP_FORCE_AUTH }}"{% endif %}
-        {% if KEYCLOAK_SAML_SP_IS_PASSIVE is defined %}isPassive="{{ KEYCLOAK_SAML_SP_IS_PASSIVE }}"{% endif %}
+                       xsi:schemaLocation="urn:keycloak:saml:adapter http://www.keycloak.org/schema/TOMCAT_saml_adapter_1_7.xsd">
+    <SP entityID="{{ TOMCAT_SAML_SP_ENTITY_ID }}"
+        logoutPage="{{ TOMCAT_SAML_SP_LOGOUT_PAGE | default('/logout.jsp') }}"
+        {% if TOMCAT_SAML_SP_SSL_POLICY is defined %}sslPolicy="{{ TOMCAT_SAML_SP_SSL_POLICY }}"{% endif %}    
+        {% if TOMCAT_SAML_SP_NAME_ID_POLICY_FORMAT is defined %}nameIDPolicyFormat="{{ TOMCAT_SAML_SP_NAME_ID_POLICY_FORMAT }}"{% endif %}
+        {% if TOMCAT_SAML_SP_FORCE_AUTH is defined %}forceAuthentication="{{ TOMCAT_SAML_SP_FORCE_AUTH }}"{% endif %}
+        {% if TOMCAT_SAML_SP_IS_PASSIVE is defined %}isPassive="{{ TOMCAT_SAML_SP_IS_PASSIVE }}"{% endif %}
         >
         <Keys>
-            {% if KEYCLOAK_SAML_SP_KEY is defined or KEYCLOAK_SAML_SP_CERT is defined %}
-            <Key signing="{{ KEYCLOAK_SAML_SP_SIGN_KEY | default('true') }}" encryption="{{ KEYCLOAK_SAML_SP_ENCR_KEY | default('false') }}">
-                {% if KEYCLOAK_SAML_SP_KEY is defined %}<PrivateKeyPem>{{ KEYCLOAK_SAML_SP_KEY }}</PrivateKeyPem>{% endif %}
-                {% if KEYCLOAK_SAML_SP_CERT is defined %}<CertificatePem>{{ KEYCLOAK_SAML_SP_CERT }}</CertificatePem>{% endif %}
+            {% if TOMCAT_SAML_SP_KEY is defined or TOMCAT_SAML_SP_CERT is defined %}
+            <Key signing="{{ TOMCAT_SAML_SP_SIGN_KEY | default('true') }}" encryption="{{ TOMCAT_SAML_SP_ENCR_KEY | default('false') }}">
+                {% if TOMCAT_SAML_SP_KEY is defined %}<PrivateKeyPem>{{ TOMCAT_SAML_SP_KEY }}</PrivateKeyPem>{% endif %}
+                {% if TOMCAT_SAML_SP_CERT is defined %}<CertificatePem>{{ TOMCAT_SAML_SP_CERT }}</CertificatePem>{% endif %}
             </Key>
             {% endif %}
         </Keys>
-        <PrincipalNameMapping policy="{{ KEYCLOAK_SAML_SP_NAME_MAP_POLICY | default('FROM_NAME_ID') }}" {% if KEYCLOAK_SAML_SP_NAME_MAP_ATTR is defined %}attribute="{{ KEYCLOAK_SAML_SP_NAME_MAP_ATTR }}"{% endif %}/>
+        <PrincipalNameMapping policy="{{ TOMCAT_SAML_SP_NAME_MAP_POLICY | default('FROM_NAME_ID') }}" {% if TOMCAT_SAML_SP_NAME_MAP_ATTR is defined %}attribute="{{ TOMCAT_SAML_SP_NAME_MAP_ATTR }}"{% endif %}/>
         <RoleIdentifiers>
-            <Attribute name="{{ KEYCLOAK_SAML_SP_ROLE_ATTR | default('Role') }}"/>
+            <Attribute name="{{ TOMCAT_SAML_SP_ROLE_ATTR | default('Role') }}"/>
         </RoleIdentifiers>
-        <IDP entityID="{{ KEYCLOAK_SAML_IDP_ENTITY_ID }}"
-             metadataUrl="{{ KEYCLOAK_SAML_IDP_META_URL }}">
-            <SingleSignOnService signRequest="{{ KEYCLOAK_SAML_IDP_SIGN_REQ | default('false') }}"
-                                 validateResponseSignature="{{ KEYCLOAK_SAML_IDP_SIGN_REQ | default('false') }}"
-                                 requestBinding="{{ KEYCLOAK_SAML_IDP_REQ_BIND | default('POST') }}"
-                                 responseBinding="{{ KEYCLOAK_SAML_IDP_REP_BIND | default('POST') }}"
-                                 bindingUrl="{{ KEYCLOAK_SAML_IDP_SSO_BIND_URL }}" />
+        <IDP entityID="{{ TOMCAT_SAML_IDP_ENTITY_ID }}"
+             metadataUrl="{{ TOMCAT_SAML_IDP_META_URL }}">
+            <SingleSignOnService signRequest="{{ TOMCAT_SAML_IDP_SIGN_REQ | default('false') }}"
+                                 validateResponseSignature="{{ TOMCAT_SAML_IDP_SIGN_REQ | default('false') }}"
+                                 requestBinding="{{ TOMCAT_SAML_IDP_REQ_BIND | default('POST') }}"
+                                 responseBinding="{{ TOMCAT_SAML_IDP_REP_BIND | default('POST') }}"
+                                 bindingUrl="{{ TOMCAT_SAML_IDP_SSO_BIND_URL }}" />
 
-            <SingleLogoutService validateRequestSignature="{{ KEYCLOAK_SAML_IDP_SIGN_REQ | default('false') }}"
-                                 validateResponseSignature="{{ KEYCLOAK_SAML_IDP_SIGN_REQ | default('false') }}"
-                                 signRequest="{{ KEYCLOAK_SAML_IDP_SIGN_REQ | default('false') }}"
-                                 signResponse="{{ KEYCLOAK_SAML_IDP_SIGN_REQ | default('false') }}"
-                                 requestBinding="{{ KEYCLOAK_SAML_IDP_REQ_BIND | default('POST') }}"
-                                 responseBinding="{{ KEYCLOAK_SAML_IDP_REP_BIND | default('POST') }}"
-                                 postBindingUrl="{{ KEYCLOAK_SAML_IDP_SLS_BIND_URL }}"
-                                 redirectBindingUrl="{{ KEYCLOAK_SAML_IDP_SLS_BIND_URL }}" />
+            <SingleLogoutService validateRequestSignature="{{ TOMCAT_SAML_IDP_SIGN_REQ | default('false') }}"
+                                 validateResponseSignature="{{ TOMCAT_SAML_IDP_SIGN_REQ | default('false') }}"
+                                 signRequest="{{ TOMCAT_SAML_IDP_SIGN_REQ | default('false') }}"
+                                 signResponse="{{ TOMCAT_SAML_IDP_SIGN_REQ | default('false') }}"
+                                 requestBinding="{{ TOMCAT_SAML_IDP_REQ_BIND | default('POST') }}"
+                                 responseBinding="{{ TOMCAT_SAML_IDP_REP_BIND | default('POST') }}"
+                                 postBindingUrl="{{ TOMCAT_SAML_IDP_SLS_BIND_URL }}"
+                                 redirectBindingUrl="{{ TOMCAT_SAML_IDP_SLS_BIND_URL }}" />
             <Keys>
-                {% if KEYCLOAK_SAML_IDP_CERT is defined %}
+                {% if TOMCAT_SAML_IDP_CERT is defined %}
                 <Key signing="true">
-                    {% if KEYCLOAK_SAML_IDP_CERT is defined %}<CertificatePem>{{ KEYCLOAK_SAML_IDP_CERT }}</CertificatePem>{% endif %}
+                    {% if TOMCAT_SAML_IDP_CERT is defined %}<CertificatePem>{{ TOMCAT_SAML_IDP_CERT }}</CertificatePem>{% endif %}
                 </Key>
                 {% endif %}
             </Keys>

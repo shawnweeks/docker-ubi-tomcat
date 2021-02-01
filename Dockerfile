@@ -42,7 +42,7 @@ COPY --chown=${TOMCAT_USER}:${TOMCAT_GROUP} [ "entrypoint.sh", "entrypoint.py", 
 
 RUN chmod 755 ${TOMCAT_HOME}/entrypoint.*
 
-EXPOSE 8080
+EXPOSE 8080 8443
 
 USER ${TOMCAT_USER}
 WORKDIR ${TOMCAT_HOME}
