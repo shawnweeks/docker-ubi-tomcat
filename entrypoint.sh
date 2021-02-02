@@ -4,6 +4,8 @@ set -e
 
 entrypoint.py
 
+unset "${!TOMCAT_@}"
+
 ${HOME}/bin/catalina.sh run &
 TOMCAT_PID="$!"
 
