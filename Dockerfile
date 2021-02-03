@@ -15,7 +15,8 @@ COPY [ "${TOMCAT_PACKAGE}", "${KEYCLOAK_PACKAGE}", "/tmp/" ]
 RUN mkdir -p /tmp/tomcat_pkg && \
     tar -xf /tmp/${TOMCAT_PACKAGE} -C "/tmp/tomcat_pkg" --strip-components=1 && \
     mkdir -p /tmp/keycloak_pkg && \
-    tar -xf /tmp/${KEYCLOAK_PACKAGE} -C "/tmp/tomcat_pkg/lib"    
+    tar -xf /tmp/${KEYCLOAK_PACKAGE} -C "/tmp/tomcat_pkg/lib" && \
+    rm -rf /tmp/tomcat_pkg/webapps/*
 
 ###############################################################################
 FROM ${BASE_REGISTRY}/${BASE_IMAGE}:${BASE_TAG}
