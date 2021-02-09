@@ -1,44 +1,50 @@
-### Download Depencies
+### Configure
 ```shell
 export TOMCAT_VERSION=9.0.41
+export TOMCAT_NATIVE_VERSION=1.2.26
+export APR_VERSION=1.7.0
 export KEYCLOAK_VERSION=12.0.2
+```
 
+### Download
+```shell
 wget https://archive.apache.org/dist/tomcat/tomcat-9/v${TOMCAT_VERSION}/bin/apache-tomcat-${TOMCAT_VERSION}.tar.gz
+wget https://archive.apache.org/dist/tomcat/tomcat-connectors/native/${TOMCAT_NATIVE_VERSION}/source/tomcat-native-${TOMCAT_NATIVE_VERSION}-src.tar.gz
+wget https://archive.apache.org/dist/apr/apr-${APR_VERSION}.tar.gz
 wget https://github.com/keycloak/keycloak/releases/download/${KEYCLOAK_VERSION}/keycloak-saml-tomcat-adapter-${KEYCLOAK_VERSION}.tar.gz
 ```
 
-### Build Image
+### Build
 ```shell
-export TOMCAT_VERSION=9.0.41
-export KEYCLOAK_VERSION=12.0.2
-
 docker build \
+    --progress plain \
     -t ${REGISTRY}/apache/tomcat:${TOMCAT_VERSION} \
     --build-arg BASE_REGISTRY=${REGISTRY} \
     --build-arg TOMCAT_VERSION=${TOMCAT_VERSION} \
+    --build-arg TOMCAT_NATIVE_VERSION=${TOMCAT_NATIVE_VERSION} \
+    --build-arg APR_VERSION=${APR_VERSION} \
     --build-arg KEYCLOAK_VERSION=${KEYCLOAK_VERSION} \
     .
 ```
 
-### Push to Registry
+### Push
 ```shell
 docker push ${REGISTRY}/apache/tomcat
 ```
 
-### Simple Run Command
+### Run
 ```shell
-export TOMCAT_VERSION=9.0.41
 docker run --init -it --rm \
     --name tomcat  \
     -p 8080:8080 \
     ${REGISTRY}/apache/tomcat:${TOMCAT_VERSION}
 ```
 
-### Simple SSL Run Command
+### Run SSL
 ```shell
-export TOMCAT_VERSION=9.0.41
 keytool -genkey -noprompt -keyalg RSA \
-        -alias selfsigned -keystore keystore.jks -storepass changeit \
+        -alias selfsigned -keystore keystore.jks -storetype jks \
+        -storepass changeit -keypass changeit \
         -dname "CN=localhost" \
         -validity 360 -keysize 2048
 docker run --init -it --rm \
@@ -50,7 +56,7 @@ docker run --init -it --rm \
     -e TOMCAT_SSL_ENABLED=true \
     -e TOMCAT_KEY_ALIAS=selfsigned \
     -e TOMCAT_KEYSTORE_FILE=/tmp/keystore.jks \
-    -e TOMCAT_KEYSTORE_PASS=changeit \
+    -e TOMCAT_KEYSTORE_PASSWORD=changeit \
     -p 8443:8443 \
     ${REGISTRY}/apache/tomcat:${TOMCAT_VERSION}
 ```
@@ -65,7 +71,6 @@ docker run --init -it --rm \
 | TOMCAT_VERSION | Apache Tomcat 9 Version | 9.0.37 |
 | TOMCAT_MIRROR | Keycloak Download Mirror | https://downloads.jboss.org/keycloak |
 | TOMCAT_VERSION | Keycloak Adapter Version | 11.0.1 |
-<br/>
 
 ### Run Parameters
 | Environment Variable | Description | Default|
@@ -80,6 +85,7 @@ docker run --init -it --rm \
 | TOMCAT_KEYSTORE_FILE | Tomcat SSL Keystore File | None |
 | TOMCAT_KEYSTORE_PASS | Tomcat SSL Keystore Password | None |
 | TOMCAT_KEYSTORE_TYPE | Tomcat SSL Keystore Type | JKS |
+| TOMCAT_FIPS_MODE | Enable or disable FIPS Mode | on |
 | TOMCAT_SAML_ENABLED | Enables Keycloak SAML Adapter for Tomcat | false|
 | TOMCAT_SAML_SP_ENTITY_ID | The identifier for this client | |
 | TOMCAT_SAML_SP_LOGOUT_PAGE | See Keycloak Documentation | None |
@@ -99,23 +105,7 @@ docker run --init -it --rm \
 | TOMCAT_SAML_IDP_REP_BIND| Response binding method | POST |
 | TOMCAT_SAML_IDP_SSO_BIND_URL | This is the URL for the IDP login service that the client will send requests to. This setting is REQUIRED. | None |
 | TOMCAT_SAML_IDP_SLS_BIND_URL | This is the URL for the IDP’s logout service when using the REDIRECT binding. This setting is REQUIRED. | None |
-<br/>
 
-###  Example Run Command With WAR
-```shell
-docker run --init -it --rm \
-    --name tomcat \
-    -v $PWD/auth-test/target/auth-test-0.0.1-SNAPSHOT.war:/opt/tomcat/webapps/auth-test.war \
-    -p 8080:8080 \
-    -e TOMCAT_SAML_ENABLED=true \
-    -e TOMCAT_SAML_SP_ENTITY_ID=tomcat \
-    -e TOMCAT_SAML_SP_SIGN_KEY=true \
-    -e TOMCAT_SAML_SP_KEY='PEM_KEY_HERE' \
-    -e TOMCAT_SAML_SP_CERT='PEM_CERT_HERE' \
-    -e TOMCAT_SAML_IDP_ENTITY_ID=idp \
-    -e TOMCAT_SAML_IDP_SIGN_REQ=true \
-    -e TOMCAT_SAML_IDP_BIND_URL='https://auth.cloudbrocktec.com/realms/master/protocol/saml' \
-    -e TOMCAT_SAML_IDP_SSO_BIND_URL='https://auth.cloudbrocktec.com/realms/master/protocol/saml' \
-    -e TOMCAT_SAML_IDP_META_URL='https://auth.cloudbrocktec.com/realms/master/protocol/saml/descriptor' \
-    registry.cloudbrocktec.com/apache/tomcat:9.0
-```
+
+### Tomcat Native
+If you need the Tomcat Native Library for another project you can copy ```libapr-1.*``` and ```libtcnative-1.*``` from ```/opt/tomcat/lib```. You'll also need to update ```LD_LIBRARY_PATH``` to include the directory you are using.

@@ -6,6 +6,8 @@ entrypoint.py
 
 unset "${!TOMCAT_@}"
 
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$HOME/lib
+
 ${HOME}/bin/catalina.sh run &
 TOMCAT_PID="$!"
 

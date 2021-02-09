@@ -25,7 +25,7 @@
   <Listener className="org.apache.catalina.security.SecurityListener" />
   -->
   <!--APR library loader. Documentation at /docs/apr.html -->
-  <Listener className="org.apache.catalina.core.AprLifecycleListener" SSLEngine="on" />
+  <Listener className="org.apache.catalina.core.AprLifecycleListener" SSLEngine="on" FIPSMode="{{ TOMCAT_FIPS_MODE | default('on') }}"/>
   <!-- Prevent memory leaks due to use of particular java/javax APIs-->
   <Listener className="org.apache.catalina.core.JreMemoryLeakPreventionListener" />
   <Listener className="org.apache.catalina.mbeans.GlobalResourcesLifecycleListener" />
@@ -69,10 +69,10 @@
     <Connector port="{{ TOMCAT_PORT | default('8080') }}"
                protocol="HTTP/1.1"
                connectionTimeout="20000"
-               redirectPort="8443"
+               redirectPort="8443"               
 
                SSLEnabled="{{ TOMCAT_SSL_ENABLED | default('false') }}"
-               sslEnabledProtocols="{{ TOMCAT_SSL_ENABLED_PROTOCOLS | default ('TLSv1.2,TLSv1.3') }}"
+               sslEnabledProtocols="{{ TOMCAT_SSL_ENABLED_PROTOCOLS | default ('TLSv1.2') }}"
                keyAlias="{{ TOMCAT_KEY_ALIAS | default('') }}"
                keystoreFile="{{ TOMCAT_KEYSTORE_FILE | default('') }}"
                keystorePass="{{ TOMCAT_KEYSTORE_PASSWORD | default('') }}"
