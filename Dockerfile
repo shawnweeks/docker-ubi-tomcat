@@ -29,7 +29,21 @@ RUN yum install -y gcc make openssl-devel java-11-openjdk-devel
 RUN mkdir -p /tmp/tomcat_pkg && \
     tar -xf /tmp/${TOMCAT_PACKAGE} -C "/tmp/tomcat_pkg" --strip-components=1 && \    
     tar -xf /tmp/${KEYCLOAK_PACKAGE} -C "/tmp/tomcat_pkg/lib" && \
+    touch /tmp/tomcat_pkg/conf/server.xml && \
+    touch /tmp/tomcat_pkg/conf/context.xml && \
+    touch /tmp/tomcat_pkg/conf/web.xml && \
+    touch /tmp/tomcat_pkg/conf/keycloak-saml.xml && \
     rm -rf /tmp/tomcat_pkg/webapps/*
+
+# Apply fix for STIG V-222978
+# Broken in Tomcat 9.0.41
+# RUN mkdir /tmp/v-222978 && \
+#     cd /tmp/v-222978 && \
+#     jar -xf /tmp/tomcat_pkg/lib/catalina.jar org/apache/catalina/util/ServerInfo.properties && \
+#     echo 'server.info=Web Server' > org/apache/catalina/util/ServerInfo.properties && \
+#     echo 'server.number=1.0.0' >> org/apache/catalina/util/ServerInfo.properties && \
+#     echo 'server.built=Jan 1 2000 00:00:00 UTC' >> org/apache/catalina/util/ServerInfo.properties && \
+#     jar -uf /tmp/tomcat_pkg/lib/catalina.jar org/apache/catalina/util/ServerInfo.properties
 
 # Build Apache Portal Runtime
 RUN mkdir -p /tmp/apr_package && \
@@ -62,16 +76,21 @@ ENV PATH=$PATH:$CATALINA_HOME/bin
 
 RUN yum install -y python3 python3-jinja2 java-11-openjdk-devel && \
     yum clean all && \
-    mkdir -p ${TOMCAT_HOME} && \
+    mkdir -p ${TOMCAT_HOME} && \    
     groupadd -r -g ${TOMCAT_GID} ${TOMCAT_GROUP} && \
-    useradd -r -u ${TOMCAT_UID} -g ${TOMCAT_GROUP} -M -d ${TOMCAT_HOME} ${TOMCAT_USER} && \
-    chown ${TOMCAT_USER}:${TOMCAT_GROUP} ${TOMCAT_HOME}
+    useradd -r -u ${TOMCAT_UID} -g ${TOMCAT_GROUP} -M -d ${TOMCAT_HOME} -s /sbin/nologin ${TOMCAT_USER} && \
+    chown root:${TOMCAT_GROUP} ${TOMCAT_HOME}
 
 COPY [ "templates/*.j2", "/opt/jinja-templates/" ]
-COPY --from=build --chown=${TOMCAT_USER}:${TOMCAT_GROUP} [ "/tmp/tomcat_pkg", "${TOMCAT_HOME}/" ]
-COPY --chown=${TOMCAT_USER}:${TOMCAT_GROUP} [ "entrypoint.sh", "entrypoint.py", "entrypoint_helpers.py", "${TOMCAT_HOME}/" ]
+COPY --from=build --chown=root:${TOMCAT_GROUP} [ "/tmp/tomcat_pkg", "${TOMCAT_HOME}/" ]
+COPY --chown=root:${TOMCAT_GROUP} [ "entrypoint.sh", "entrypoint.py", "entrypoint_helpers.py", "${TOMCAT_HOME}/" ]
 
-RUN chmod 755 ${TOMCAT_HOME}/entrypoint.*
+RUN chmod 750 ${TOMCAT_HOME}/conf && \
+    chown ${TOMCAT_USER}:${TOMCAT_GROUP} ${TOMCAT_HOME}/conf/* && \
+    chown ${TOMCAT_USER}:${TOMCAT_GROUP} ${TOMCAT_HOME}/logs && \
+    chown ${TOMCAT_USER}:${TOMCAT_GROUP} ${TOMCAT_HOME}/work && \
+    chown ${TOMCAT_USER}:${TOMCAT_GROUP} ${TOMCAT_HOME}/temp && \
+    chmod 755 ${TOMCAT_HOME}/entrypoint.*
 
 EXPOSE 8080 8443
 
