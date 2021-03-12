@@ -90,6 +90,7 @@ RUN chmod 750 ${TOMCAT_INSTALL_DIR}/conf && \
     chown ${TOMCAT_USER}:${TOMCAT_GROUP} ${TOMCAT_INSTALL_DIR}/conf/* && \
     chown ${TOMCAT_USER}:${TOMCAT_GROUP} ${TOMCAT_INSTALL_DIR}/logs && \
     chown ${TOMCAT_USER}:${TOMCAT_GROUP} ${TOMCAT_INSTALL_DIR}/work && \
+    chown ${TOMCAT_USER}:${TOMCAT_GROUP} ${TOMCAT_INSTALL_DIR}/webapps && \
     chown ${TOMCAT_USER}:${TOMCAT_GROUP} ${TOMCAT_INSTALL_DIR}/temp && \
     chmod 755 ${TOMCAT_INSTALL_DIR}/entrypoint.*
 
