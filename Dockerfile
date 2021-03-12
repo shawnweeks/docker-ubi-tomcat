@@ -71,30 +71,31 @@ ENV TOMCAT_GROUP tomcat
 ENV TOMCAT_UID 1001
 ENV TOMCAT_GID 1001
 
-ENV TOMCAT_HOME=/opt/tomcat
-ENV PATH=$PATH:$CATALINA_HOME/bin
+ENV TOMCAT_HOME=/var/lib/tomcat
+ENV TOMCAT_INSTALL_DIR=/opt/tomcat
 
-RUN yum install -y python3 python3-jinja2 java-11-openjdk-devel && \
+RUN yum install -y java-11-openjdk-devel && \
     yum clean all && \
-    mkdir -p ${TOMCAT_HOME} && \    
+    mkdir -p ${TOMCAT_INSTALL_DIR} && \
+    mkdir -p ${TOMCAT_HOME} && \
     groupadd -r -g ${TOMCAT_GID} ${TOMCAT_GROUP} && \
     useradd -r -u ${TOMCAT_UID} -g ${TOMCAT_GROUP} -M -d ${TOMCAT_HOME} -s /sbin/nologin ${TOMCAT_USER} && \
-    chown root:${TOMCAT_GROUP} ${TOMCAT_HOME}
+    chown ${TOMCAT_USER}:${TOMCAT_GROUP} ${TOMCAT_HOME} -R
 
 COPY [ "templates/*.j2", "/opt/jinja-templates/" ]
-COPY --from=build --chown=root:${TOMCAT_GROUP} [ "/tmp/tomcat_pkg", "${TOMCAT_HOME}/" ]
-COPY --chown=root:${TOMCAT_GROUP} [ "entrypoint.sh", "entrypoint.py", "entrypoint_helpers.py", "${TOMCAT_HOME}/" ]
+COPY --from=build --chown=root:${TOMCAT_GROUP} [ "/tmp/tomcat_pkg", "${TOMCAT_INSTALL_DIR}/" ]
+COPY --chown=root:${TOMCAT_GROUP} [ "entrypoint.sh", "entrypoint.py", "entrypoint_helpers.py", "${TOMCAT_INSTALL_DIR}/" ]
 
-RUN chmod 750 ${TOMCAT_HOME}/conf && \
-    chown ${TOMCAT_USER}:${TOMCAT_GROUP} ${TOMCAT_HOME}/conf/* && \
-    chown ${TOMCAT_USER}:${TOMCAT_GROUP} ${TOMCAT_HOME}/logs && \
-    chown ${TOMCAT_USER}:${TOMCAT_GROUP} ${TOMCAT_HOME}/work && \
-    chown ${TOMCAT_USER}:${TOMCAT_GROUP} ${TOMCAT_HOME}/temp && \
-    chmod 755 ${TOMCAT_HOME}/entrypoint.*
+RUN chmod 750 ${TOMCAT_INSTALL_DIR}/conf && \
+    chown ${TOMCAT_USER}:${TOMCAT_GROUP} ${TOMCAT_INSTALL_DIR}/conf/* && \
+    chown ${TOMCAT_USER}:${TOMCAT_GROUP} ${TOMCAT_INSTALL_DIR}/logs && \
+    chown ${TOMCAT_USER}:${TOMCAT_GROUP} ${TOMCAT_INSTALL_DIR}/work && \
+    chown ${TOMCAT_USER}:${TOMCAT_GROUP} ${TOMCAT_INSTALL_DIR}/temp && \
+    chmod 755 ${TOMCAT_INSTALL_DIR}/entrypoint.*
 
 EXPOSE 8080 8443
 
 USER ${TOMCAT_USER}
 WORKDIR ${TOMCAT_HOME}
-ENV PATH=${PATH}:${TOMCAT_HOME}
+ENV PATH=${PATH}:${TOMCAT_INSTALL_DIR}
 CMD ["entrypoint.sh"]

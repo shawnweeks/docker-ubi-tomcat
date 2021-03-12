@@ -1,9 +1,9 @@
 ### Configure
 ```shell
-export TOMCAT_VERSION=9.0.41
+export TOMCAT_VERSION=9.0.44
 export TOMCAT_NATIVE_VERSION=1.2.26
 export APR_VERSION=1.7.0
-export KEYCLOAK_VERSION=12.0.2
+export KEYCLOAK_VERSION=12.0.4
 ```
 
 ### Download
