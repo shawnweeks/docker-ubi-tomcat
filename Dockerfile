@@ -29,10 +29,6 @@ RUN yum install -y gcc make openssl-devel java-11-openjdk-devel
 RUN mkdir -p /tmp/tomcat_pkg && \
     tar -xf /tmp/${TOMCAT_PACKAGE} -C "/tmp/tomcat_pkg" --strip-components=1 && \    
     tar -xf /tmp/${KEYCLOAK_PACKAGE} -C "/tmp/tomcat_pkg/lib" && \
-    touch /tmp/tomcat_pkg/conf/server.xml && \
-    touch /tmp/tomcat_pkg/conf/context.xml && \
-    touch /tmp/tomcat_pkg/conf/web.xml && \
-    touch /tmp/tomcat_pkg/conf/keycloak-saml.xml && \
     rm -rf /tmp/tomcat_pkg/webapps/*
 
 # Apply fix for STIG V-222978
@@ -86,12 +82,11 @@ COPY [ "templates/*.j2", "/opt/jinja-templates/" ]
 COPY --from=build --chown=root:${TOMCAT_GROUP} [ "/tmp/tomcat_pkg", "${TOMCAT_INSTALL_DIR}/" ]
 COPY --chown=root:${TOMCAT_GROUP} [ "entrypoint.sh", "entrypoint.py", "entrypoint_helpers.py", "${TOMCAT_INSTALL_DIR}/" ]
 
-RUN chmod 750 ${TOMCAT_INSTALL_DIR}/conf && \
-    chown ${TOMCAT_USER}:${TOMCAT_GROUP} ${TOMCAT_INSTALL_DIR}/conf/* && \
-    chown ${TOMCAT_USER}:${TOMCAT_GROUP} ${TOMCAT_INSTALL_DIR}/logs && \
-    chown ${TOMCAT_USER}:${TOMCAT_GROUP} ${TOMCAT_INSTALL_DIR}/work && \
-    chown ${TOMCAT_USER}:${TOMCAT_GROUP} ${TOMCAT_INSTALL_DIR}/webapps && \
-    chown ${TOMCAT_USER}:${TOMCAT_GROUP} ${TOMCAT_INSTALL_DIR}/temp && \
+RUN chown ${TOMCAT_USER}:${TOMCAT_GROUP} ${TOMCAT_INSTALL_DIR}/conf -R && \
+    chown ${TOMCAT_USER}:${TOMCAT_GROUP} ${TOMCAT_INSTALL_DIR}/logs -R && \
+    chown ${TOMCAT_USER}:${TOMCAT_GROUP} ${TOMCAT_INSTALL_DIR}/work -R && \
+    chown ${TOMCAT_USER}:${TOMCAT_GROUP} ${TOMCAT_INSTALL_DIR}/webapps -R && \
+    chown ${TOMCAT_USER}:${TOMCAT_GROUP} ${TOMCAT_INSTALL_DIR}/temp -R && \
     chmod 755 ${TOMCAT_INSTALL_DIR}/entrypoint.*
 
 EXPOSE 8080 8443
